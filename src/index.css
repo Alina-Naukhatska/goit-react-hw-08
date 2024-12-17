@@ -1,12 +1,6 @@
 :root {
-  --black: black;
-  --white: white;
-  --braungrey: #2a2a2a;
-  --darkgrey: #808080;
-  --grey: #d3d3d3d3;
-  --green: #60a559;
-  --red: #ff0000;
 }
+
 body {
   font-family: sans-serif;
   line-height: 1.5;

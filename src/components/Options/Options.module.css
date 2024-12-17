@@ -1,0 +1,10 @@
+.options {
+  display: flex;
+  gap: 5px;
+  padding: 5px;
+}
+.options button {
+  border-radius: 3px;
+  border: 1px solid grey;
+  padding: 5px;
+}
