@@ -1,30 +1,27 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import React from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import ContactForm from './ContactForm/ContactForm';
+import ContactList from './ContactList/ContactList';
 import SearchBox from './SearchBox/SearchBox';
-import ContactList from './ContactList/ContactList'; 
+import { addContact, deleteContact } from '../redux/contactsSlice';
+import { changeFilter } from '../redux/filtersSlice';
 import s from './App.module.css';
 
 const App = () => {
-  const [contacts, setContacts] = useState([]);
+  const dispatch = useDispatch();
+  const contacts = useSelector((state) => state.contacts.items);
+  const filter = useSelector((state) => state.filters.name);
 
-  const filter = useSelector((state) => state.filters.name); 
-
-  useEffect(() => {
-    const savedContacts = JSON.parse(localStorage.getItem('contacts')) || [];
-    setContacts(savedContacts);
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts]);
-    
-  const addContact = (newContact) => {
-    setContacts((prev) => [...prev, newContact]);
+  const handleAddContact = (newContact) => {
+    dispatch(addContact(newContact)); 
   };
 
-  const deleteContact = (id) => {
-    setContacts((prev) => prev.filter((contact) => contact.id !== id));
+  const handleDeleteContact = (contactId) => {
+    dispatch(deleteContact(contactId)); 
+  };
+
+  const handleSearchChange = (query) => {
+    dispatch(changeFilter(query)); 
   };
 
   const filteredContacts = contacts.filter((contact) =>
@@ -32,11 +29,11 @@ const App = () => {
   );
 
   return (
-    <div>
-      <h1 className={s.title}>Phonebook</h1>
-      <ContactForm onAddContact={addContact} />
-      <SearchBox />
-      <ContactList contacts={filteredContacts} onDeleteContact={deleteContact} />
+    <div className={s.app}>
+      <h1>Contact Manager</h1>
+      <ContactForm onAddContact={handleAddContact} />
+      <SearchBox value={filter} onChange={handleSearchChange} /> 
+      <ContactList contacts={filteredContacts} onDeleteContact={handleDeleteContact} />
     </div>
   );
 };
