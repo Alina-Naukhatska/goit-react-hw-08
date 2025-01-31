@@ -1,36 +1,36 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { selectContacts } from '../../redux/contactsSlice';
-import { selectFilter } from '../../redux/filtersSlice'; 
-import { deleteContact } from '../../redux/contactsSlice'; 
-import Contact from '../Contact/Contact'; 
+import { fetchContacts, deleteContact } from '../../redux/contactsOps';
+import { selectFilteredContacts, selectLoading, selectError } from '../../redux/contactsSelectors';
+import Contact from '../Contact/Contact';
 import s from './ContactList.module.css';
+import Loader from '../Loader/Loader';
 
 const ContactList = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector(selectContacts); 
-  const filter = useSelector(selectFilter); 
+  const contacts = useSelector(selectFilteredContacts);  
+  const loading = useSelector(selectLoading);  
+  const error = useSelector(selectError);  
 
-  const visibleContacts = contacts.filter(contact =>
-    contact.name.toLowerCase().includes(filter.toLowerCase()) 
-  );
-
-  const handleDeleteContact = (contactId) => {
-    dispatch(deleteContact(contactId)); 
-  };
+  useEffect(() => {
+    dispatch(fetchContacts());  
+  }, [dispatch]);
 
   return (
-    <ul className={s.list}>
-      {visibleContacts.map(({ id, name, number }) => (
-        <Contact
-          key={id}
-          id={id}
-          name={name}
-          number={number}
-          onDeleteContact={() => handleDeleteContact(id)} 
-        />
-      ))}
-    </ul>
+    <>
+      {loading && <Loader />} 
+      {error && <p className={s.error}>Error: {error}</p>}  
+      <ul className={s.list}>
+        {contacts.map(({ id, name, number }) => (
+          <Contact
+            key={id}
+            id={id}
+            name={name}
+            number={number}
+          />
+        ))}
+      </ul>
+    </>
   );
 };
 

@@ -1,9 +1,8 @@
 import { useFormik } from 'formik';
 import React from 'react';
 import * as Yup from 'yup';
-import { nanoid } from 'nanoid';
 import { useDispatch } from 'react-redux';
-import { addContact } from '../../redux/contactsSlice';
+import { addContact } from '../../redux/contactsOps';
 import s from './ContactForm.module.css';
 
 const ContactForm = () => {
@@ -15,15 +14,14 @@ const ContactForm = () => {
       name: Yup.string()
         .min(3, 'Мінімум 3 символи')
         .max(50, 'Максимум 50 символів')
-        .required('Обов\'язкове до заповнення!'),
+        .required("Обов'язкове до заповнення!"),
       number: Yup.string()
         .min(10, 'Номер телефону має містити мінімум 10 символів')
         .matches(/^[0-9]+$/, 'Номер телефону може містити тільки цифри')
-        .required('Обов\'язкове до заповнення!'),
+        .required("Обов'язкове до заповнення!"),
     }),
     onSubmit: (values, { resetForm }) => {
-      const newContact = { id: nanoid(), ...values };
-      dispatch(addContact(newContact));
+      dispatch(addContact(values));
       resetForm();
     },
   });

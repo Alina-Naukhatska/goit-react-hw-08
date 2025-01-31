@@ -31,4 +31,10 @@
   padding: 8px 12px;
   cursor: pointer;
   font-size: 14px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.deleteButton:hover {
+  background-color: #ff4d4d;
+  color: white;
 }

@@ -1,41 +1,31 @@
-import React from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchContacts } from '../redux/contactsOps';
+import { selectLoading, selectError } from '../redux/contactsSelectors';
 import ContactForm from './ContactForm/ContactForm';
 import ContactList from './ContactList/ContactList';
+import Loader from './Loader/Loader';
+import styles from './App.module.css';
 import SearchBox from './SearchBox/SearchBox';
-import { addContact, deleteContact } from '../redux/contactsSlice';
-import { changeFilter } from '../redux/filtersSlice';
-import s from './App.module.css';
 
 const App = () => {
   const dispatch = useDispatch();
-  const contacts = useSelector((state) => state.contacts.items);
-  const filter = useSelector((state) => state.filters); 
+  const isLoading = useSelector(selectLoading);
+  const error = useSelector(selectError);
 
-  const handleAddContact = (newContact) => {
-    dispatch(addContact(newContact)); 
-  };
-
-  const handleDeleteContact = (contactId) => {
-    dispatch(deleteContact(contactId)); 
-  };
-
-  const handleSearchChange = (query) => {
-    dispatch(changeFilter(query)); 
-  };
-
-  const normalizedFilter = filter || '';
-
-  const filteredContacts = contacts.filter((contact) =>
-    contact.name.toLowerCase().includes(normalizedFilter.toLowerCase()) 
-  );
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
   return (
-    <div className={s.app}>
-      <h1>Contact Manager</h1>
-      <ContactForm onAddContact={handleAddContact} />
-      <SearchBox value={normalizedFilter} onChange={handleSearchChange} /> 
-      <ContactList contacts={filteredContacts} onDeleteContact={handleDeleteContact} />
+    <div className={styles.container}>
+      <h1>Phonebook</h1>
+      <ContactForm />
+      <h2>Contacts</h2>
+      <SearchBox />
+      {isLoading && <Loader />}
+      {error && <p className={styles.error}>Error: {error}</p>}
+      <ContactList />
     </div>
   );
 };
