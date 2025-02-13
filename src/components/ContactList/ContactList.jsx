@@ -1,36 +1,25 @@
-import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { fetchContacts, deleteContact } from '../../redux/contactsOps';
-import { selectFilteredContacts, selectLoading, selectError } from '../../redux/contactsSelectors';
+import { useSelector } from 'react-redux';
 import Contact from '../Contact/Contact';
-import s from './ContactList.module.css';
-import Loader from '../Loader/Loader';
+import { selectIsLoading, selectError } from '../../redux/contacts/selectors';
+import { selectFilterValue } from '../../redux/filters/selectors';
 
 const ContactList = () => {
-  const dispatch = useDispatch();
-  const contacts = useSelector(selectFilteredContacts);  
-  const loading = useSelector(selectLoading);  
-  const error = useSelector(selectError);  
+  const contacts = useSelector(state => state.contacts.items);
+  const filter = useSelector(selectFilterValue);
+  const isLoading = useSelector(selectIsLoading);
+  const error = useSelector(selectError);
 
-  useEffect(() => {
-    dispatch(fetchContacts());  
-  }, [dispatch]);
+  if (isLoading) return <p className="text-center text-gray-500">Loading... Please wait a little</p>;
+  if (error) return <p className="text-center text-red-500">Error: {error}</p>;
+
+  const filteredContacts = contacts.filter(contact => contact.name.toLowerCase().includes(filter) || contact.number.includes(filter));
 
   return (
-    <>
-      {loading && <Loader />} 
-      {error && <p className={s.error}>Error: {error}</p>}  
-      <ul className={s.list}>
-        {contacts.map(({ id, name, number }) => (
-          <Contact
-            key={id}
-            id={id}
-            name={name}
-            number={number}
-          />
-        ))}
-      </ul>
-    </>
+    <div className="flex flex-wrap gap-4 justify-center">
+      {filteredContacts.map(({ id, name, number }) => (
+        <Contact key={id} id={id} name={name} number={number} />
+      ))}
+    </div>
   );
 };
 
